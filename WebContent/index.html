@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>XHR</title>
+</head>
+<body>
+	
+	<script src="xhr.js"></script>
+	<script>
+		xhr({
+			"method": 'get',
+			"url": 'http://localhost:8080/Framework/serv',
+			"data": xhr.jsonToParams({
+				"class": "Mod1",
+				"method": "sayHello",
+								// 'String Carlos, int 25'
+				"arguments": xhr.varsToArguments([
+					{
+						"type": 'String',
+						"value": 'Orlando'
+					},
+					{
+						"type": 'int',
+						"value": 25
+					}
+				]),
+				"array": [1, 2, 3],
+				"array": [4, 5, 6]
+			}),
+			"success": function (argument) {
+				console.log(argument);
+			},
+			"fail": function (argument, error) {
+				console.log(argument)
+				console.log(error)
+			}
+		});
+	</script>
+</body>
+</html>
