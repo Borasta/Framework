@@ -20,6 +20,8 @@ public class JDBC {
     private String driver = null;
 
     private Connection conn = null;
+    
+    private final OLogs log = OLogs.getInstance();
 
     /**
      * <p>
@@ -145,27 +147,35 @@ public class JDBC {
     }
     
     private void createConnection() {
+    	log.log("Se tratara de crear una conexion a la base de datos");
         try {
         	switch (this.dataSource.getProperty("jdbc").toLowerCase()) {
 	            case "postgresql":
 	                this.driver = "org.postgresql.Driver";
+	                log.log("Se intentara conectar a postgres");
 	                break;
 	            case "mysql":
 	            	this.driver = "com.mysql.jdbc.Driver";
+	            	log.log("Se intentara conectar a mysql");
 	                break;
 	            default:
+	            	log.error("No se pudo encontrar el driver para el jdbc que indico");
 	                throw new Error("Can't load jdbc driver");
 	        }
         	Class.forName(this.driver);
+        	log.log("Se selecciono correctamente el driver");
             String connString = this.getConnString();
+            
+            log.log("Intentamos conectarnos a la base de datos");
             this.conn = DriverManager.getConnection(connString, 
             		this.dataSource.getProperty("user"), 
             		this.dataSource.getProperty("pass"));
+            log.log("Conectado correctamente");
             
         } catch (ClassNotFoundException e) {
-			e.printStackTrace();
+        	log.error(new StringBuilder("No se encontro la clase: ").append(e).toString());
 		} catch (SQLException e) {
-            e.printStackTrace();
+			log.error(new StringBuilder("Problema sql: ").append(e).toString());
         }
     }
 
@@ -177,12 +187,14 @@ public class JDBC {
 		if( this.getConnectionStatus() ) {
     		try {
 	            PreparedStatement pstmt = this.setValues(query, values);
+	            log.log(pstmt.toString());
 	            pstmt.execute();
 	        } catch (SQLException e) {
-	            e.printStackTrace();
+	        	log.error(new StringBuilder("Hubo un problema sql: ").append(e).toString());
 	        }
     	}
     	else {
+    		log.error("No existe aun una conexion con la base de datos");
     		throw new Error("There isn't connection with database");
     	}
 	}
@@ -192,13 +204,15 @@ public class JDBC {
     		ResultSet rs = null;
 	        try {
 	            PreparedStatement pstmt = this.setValues(query, values);
+	            log.log(pstmt.toString());
 	            rs = pstmt.executeQuery();
 	        } catch (SQLException e) {	
-	            e.printStackTrace();
+	        	log.error(new StringBuilder("Hubo un problema sql: ").append(e).toString());
 	        }
 	        return this.RSToTable(rs);
     	}
         else {
+        	log.error("No existe aun una conexion con la base de datos");
         	throw new Error("There isn't connection with database");
     	}
     }
@@ -215,6 +229,7 @@ public class JDBC {
     		.append("/")
     		.append(this.dataSource.getProperty("db"));
     	
+    	log.log(connString.toString());
     	return connString.toString();
     }
 
@@ -230,7 +245,7 @@ public class JDBC {
                 pstmt.setObject(i+1, values[i]);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+        	log.error(new StringBuilder("Hubo un problema sql: ").append(e).toString());
         }
         return pstmt;
     }
@@ -264,24 +279,31 @@ public class JDBC {
             }
         }
         catch (SQLException e) {
-            e.printStackTrace();
+        	log.error(new StringBuilder("Hubo un problema sql: ").append(e).toString());
         }
 
         return table;
     }
     
     public boolean compareDataSource(Properties dataSource) {
-    	return this.dataSource == dataSource;
+    	boolean result = this.dataSource == dataSource;
+    	
+    	log.log(new StringBuilder("Se compararan 2 dataSource, Datasource del objeto: " ).append(this.dataSource)
+    			.append(" Datasource a comparar: " ).append(dataSource)
+    			.append(" Resultado: ").append(result).toString());
+    	
+    	return result;
     }
     
     public boolean close() {
+    	log.log("Se tratara de cerrar la conexion con la base de datos");
     	boolean isClosed = false;
     	try {
 			this.conn.close();
-			
 			isClosed = this.conn.isClosed();
+			log.log("La conexion se cerro satisfactoriamente");
 		} catch (SQLException e) {
-			e.printStackTrace();
+			log.error(new StringBuilder("Hubo un problema sql: ").append(e).toString());
 		}
     	return isClosed;
     	

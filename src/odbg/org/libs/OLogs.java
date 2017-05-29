@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * 
  * @author orlando
  *
- * @version 1.5
+ * @version 1.7
  */
 public class OLogs {
 	
@@ -62,24 +62,63 @@ public class OLogs {
 		OLogs.liveMode = liveMode;
 	}
 	
-	public OLogs log(String msg) {
-		this.write(" Log ", msg);
+	public OLogs log(Object ...msg) {
+		StringBuilder sb = new StringBuilder();
+		
+		for( Object str : msg )
+			sb.append(str.toString());
+		
+		this.write(" Log ", sb);
 		return this;
 	}
 	
-	public OLogs info(String msg) {
-		this.write("Info ", msg);
+	public OLogs info(Object ...msg) {
+		StringBuilder sb = new StringBuilder();
+		
+		for( Object str : msg )
+			sb.append(str.toString());
+
+		this.write("Info ", sb);
 		return this;
 	}
 	
-	public OLogs warn(String msg) {
-		this.write("Warn ", msg);
+	public OLogs warn(Object ...msg) {
+		StringBuilder sb = new StringBuilder();
+		
+		for( Object str : msg )
+			sb.append(str.toString());
+		
+		this.write("Warn ", sb);
 		return this;
 	}
 	
-	public OLogs error(String msg) {
-		this.write("Error", msg);
+	public OLogs error(Object ...msg) {
+		StringBuilder sb = new StringBuilder();
+		
+		for( Object str : msg )
+			sb.append(str.toString());
+		
+		this.write("Error", sb);
 		return this;
+	}
+	
+	private void write(String type, StringBuilder sb) {
+		
+		HashMap<String, String> log = new HashMap<String, String>();
+		
+		log.put("date", this.getTime());
+		log.put("type", type);
+		log.put("msg", sb.toString());
+		
+		 if( OLogs.logs.size() >= OLogs.maxSize) {
+			 OLogs.logs.removeLast();
+		 }
+		 OLogs.logs.addFirst(log);
+		 
+		 if( liveMode ) {
+			 System.out.println(this.format(log));
+		 }
+		
 	}
 	
 	public int length() {
@@ -94,7 +133,7 @@ public class OLogs {
 	
 	public String getAllLogs() {
 		// itera por todo los log y genera el formato indicado para luego unirlo todo
-		return OLogs.logs.stream().map((log) -> this.toString(log)).collect(Collectors.joining("\n"));
+		return OLogs.logs.stream().map((log) -> this.format(log)).collect(Collectors.joining("\n"));
 
 	}
 	
@@ -175,26 +214,7 @@ public class OLogs {
 		return OLogs.ologs;
 	}
 	
-	private void write(String type, String msg) {
-		
-		HashMap<String, String> log = new HashMap<String, String>();
-		
-		log.put("date", this.getTime());
-		log.put("type", type);
-		log.put("msg", msg);
-		
-		 if( OLogs.logs.size() >= OLogs.maxSize) {
-			 OLogs.logs.removeLast();
-		 }
-		 OLogs.logs.addFirst(log);
-		 
-		 if( liveMode ) {
-			 System.out.println(this.toString(log));
-		 }
-		
-	}
-	
-	private String toString(HashMap<String, String> log) {
+	private String format(HashMap<String, String> log) {
 		StringBuilder str = new StringBuilder();
 		str.append(log.get("date"))
 			.append(" - ")
@@ -207,9 +227,9 @@ public class OLogs {
 
 	private String getTime() {
 		Date date = new Date();
-		DateFormat logFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
        
-		return logFormat.format(date);
+		return dateFormat.format(date);
 	}
 	
 	private static void removeLeftovers() {

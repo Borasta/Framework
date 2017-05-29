@@ -19,6 +19,8 @@ public class PJDBC {
 	
 	private LinkedList<JDBC> pool = new LinkedList<>();
 	
+	private final OLogs log = OLogs.getInstance();
+	
 	public PJDBC( Properties dataSource ) {
 		this.dataSource = dataSource;
 		
@@ -46,19 +48,23 @@ public class PJDBC {
 	}
 	
 	public synchronized JDBC getJDBC() {
+		log.log("Se esta tratando de obtener una conexion del pool");
 		JDBC jdbc = null;
 		try {
-			if( this.actSize >= this.maxSize )
+			if( this.actSize >= this.maxSize ) {
+				log.log("No hay conexiones disponibles, el programa se pondra en espera");
 				wait();
+			}
 			
 			if( this.actSize < this.maxSize ) {
+				log.log("");
 				this.actSize++;
 				jdbc = this.pool.poll();
 				this.fillPool();
 			}
 			
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			log.log(new StringBuilder("Hubo un problema al tratar de poner en espera el programa: ").append(e).toString());
 		}
 		return jdbc;
 	}

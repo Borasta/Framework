@@ -1,13 +1,19 @@
-// Version 1.0
-
 package odbg.org.libs;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * 
+ * @author orlando
+ * 
+ * @version 1.1
+ */
 public class JFlex {
 	
-	public Object useMethod(String className, String methodName, String arguments)  {
+	private final OLogs log = OLogs.getInstance();
+	
+	public void useMethod(String className, String methodName, String arguments)  {
 		
 		String[] variables = arguments.trim().split(",");
 		
@@ -23,20 +29,28 @@ public class JFlex {
 		Object[] values = this.stringToValues(argsType, variables);
 		
 		Class<?> clase;
-		try {
-			clase = Class.forName("odbg.org.modules." + className);
-			
-			Object obj = clase.newInstance();
-			
-	    	Method metodo = clase.getMethod(methodName, types);
-	   
-	    	metodo.invoke(obj, values);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	
-    	return null;
+			try {
+				clase = Class.forName("odbg.org.modules." + className);
+				Object obj = clase.newInstance();
+				
+		    	Method metodo = clase.getMethod(methodName, types);
+		   
+		    	metodo.invoke(obj, values);
+			} catch (ClassNotFoundException e) {
+				log.error("No se encontro la clase: ", e);
+			} catch (InstantiationException e) {
+				log.error("No se pudo generar la instancia: ", e);
+			} catch (IllegalAccessException e) {
+				log.error("Acceso ilegal: ", e);
+			} catch (NoSuchMethodException e) {
+				log.error("No se encontro el metodo: ", e);
+			} catch (SecurityException e) {
+				log.error("No se tiene acceso al metodo: ", e);
+			} catch (IllegalArgumentException e) {
+				log.error("Parametros incorrectos: ", e);
+			} catch (InvocationTargetException e) {
+				log.error("Problema al invocar: ", e);
+			}
     	
 	}
 		
@@ -52,9 +66,20 @@ public class JFlex {
 	    	Method metodo = clase.getMethod(methodName);
 	    	
 	    	res = metodo.invoke(obj);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			log.error("No se encontro la clase: ", e);
+		} catch (InstantiationException e) {
+			log.error("No se pudo generar la instancia: ", e);
+		} catch (IllegalAccessException e) {
+			log.error("Acceso ilegal: ", e);
+		} catch (NoSuchMethodException e) {
+			log.error("No se encontro el metodo: ", e);
+		} catch (SecurityException e) {
+			log.error("No se tiene acceso al metodo: ", e);
+		} catch (IllegalArgumentException e) {
+			log.error("Parametros incorrectos: ", e);
+		} catch (InvocationTargetException e) {
+			log.error("Problema al invocar: ", e);
 		}
 		
 		return res;
@@ -95,7 +120,7 @@ public class JFlex {
 					break;
 					
 				default:
-					System.out.println("You specify a type that does not exist");
+					log.error("You specify a type that does not exist");
 					break;
 			}
 			
@@ -138,7 +163,7 @@ public class JFlex {
 					break;
 					
 				default:
-					System.out.println("You specify a type that does not exist");
+					log.error("You specify a type that does not exist");
 					break;
 			}
 			

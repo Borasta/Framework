@@ -12,6 +12,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class Security {
 
+	private final static OLogs log = OLogs.getInstance();
+	
 	public static String getMD2( String text ) {
 		return Security.criptMsg(text, "MD2");
 	}
@@ -29,6 +31,8 @@ public class Security {
 	}
 	
 	private static String criptMsg( String text, String security ) {
+		log.log(new StringBuilder("Se encriptara un mensaje en ").append(security).toString());
+		
 		byte[] digest = null;
 		try {
 			MessageDigest md = MessageDigest.getInstance(security);
@@ -36,7 +40,7 @@ public class Security {
 			md.update(buffer);
 			digest = md.digest();
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			log.error(new StringBuilder("No se encuentra ese algoritmo de encriptacion: ").append(e).toString());
 		}
 		return Security.bytesToHex(digest);
 	}

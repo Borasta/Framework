@@ -13,6 +13,8 @@ public class JSonG {
     private boolean arrayType = false;
     private boolean jsonType = false;
     
+    private final OLogs log = OLogs.getInstance();
+    
     // Create Json array type
     public JSonG add( Object value ) {
     	StringBuilder str = new StringBuilder();
@@ -34,9 +36,11 @@ public class JSonG {
             }
 
     	}
-    	else
-    		System.out.println("No puede volver a cambiar el tipo de json");
-
+    	else {
+    		log.error("No puede volver a cambiar el tipo de json");
+    		throw new Error("No puede volver a cambiar el tipo de json");
+    	}
+    	
     	return this;
     }
 
@@ -69,9 +73,11 @@ public class JSonG {
 	        this.body.append("]");
 	
     	}
-    	else
-    		System.out.println("No puede volver a cambiar el tipo de json");
-	    
+    	else {
+    		log.error("No puede volver a cambiar el tipo de json");
+    		throw new Error("No puede volver a cambiar el tipo de json");
+    	}
+    	
     	return this;
     }
     
@@ -106,8 +112,10 @@ public class JSonG {
 	        this.body.append("]");
 
     	}
-    	else
-    		System.out.println("No puede volver a cambiar el tipo de json");
+    	else {
+    		log.error("No puede volver a cambiar el tipo de json");
+    		throw new Error("No puede volver a cambiar el tipo de json");
+    	}
     	
         return this;
     }
@@ -130,8 +138,10 @@ public class JSonG {
 	        	this.body.append(",\"").append(name).append("\":").append(value);
 	        }
     	}
-    	else
-    		System.out.println("No puede volver a cambiar el tipo de json");
+    	else {
+    		log.error("No puede volver a cambiar el tipo de json");
+    		throw new Error("No puede volver a cambiar el tipo de json");
+    	}
     	
         return this;
     }
@@ -164,8 +174,10 @@ public class JSonG {
 	        this.body.append("]");
    
     	}
-    	else
-    		System.out.println("No puede volver a cambiar el tipo de json");
+    	else {
+    		log.error("No puede volver a cambiar el tipo de json");
+    		throw new Error("No puede volver a cambiar el tipo de json");
+    	}
     	
         return this;
     }
@@ -201,8 +213,10 @@ public class JSonG {
 	        this.body.append("]");
 
     	}
-    	else
-    		System.out.println("No puede volver a cambiar el tipo de json");
+    	else {
+    		log.error("No puede volver a cambiar el tipo de json");
+    		throw new Error("No puede volver a cambiar el tipo de json");
+    	}
     	
         return this;
     }
@@ -303,6 +317,8 @@ public class JSonG {
             }
         }
 
+        log.log(new StringBuilder("Se transformo el objeto json a string: ").append(prettyPrintJson.toString()).toString());
+        
         return prettyPrintJson.toString();
     }
 
